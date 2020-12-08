@@ -653,7 +653,7 @@ jmp +1`.split("\n").map(x => {
     }
 });
 
-function Execute(code, doBreak = true)
+function Execute(code)
 {
     let instructionHasRun = new Map();
     let accumulator = 0;
@@ -661,9 +661,10 @@ function Execute(code, doBreak = true)
 
     while(true) 
     {
+
         let instruction = code[index];
     
-        if(instructionHasRun.get(index) && doBreak)
+        if(instructionHasRun.get(index))
             break;
         else
             instructionHasRun.set(index, true)
@@ -681,8 +682,8 @@ function Execute(code, doBreak = true)
         {
             index += parseInt(instruction.value);
         }
-    
-        if(index == code.length)
+        
+        if(index >= code.length)
         {
             console.log("Code exitted with index: " + index);
             return { accumulator, hasExitted: true};
@@ -694,9 +695,8 @@ function Execute(code, doBreak = true)
 
 console.log("Exercise 1: " + Execute(input).accumulator);
 
-for (var i = 1; i < input.length; i++)
+for (var i = 0; i < input.length; i++)
 {
-    console.log(i);
     var improvedInput = input;
 
     if(improvedInput[i].operation == "jmp")
@@ -710,7 +710,7 @@ for (var i = 1; i < input.length; i++)
         continue;
     }
 
-    var result = Execute(improvedInput, true);
+    var result = Execute(improvedInput);
 
     if(result.hasExitted)
     {
