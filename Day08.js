@@ -645,76 +645,96 @@ acc +23
 acc -3
 nop -375
 jmp +1`.split("\n").map(x => {
-    const [operation, value] = x.split(" ");
+    const [instruction, value] = x.split(" ");
 
     return {
-        operation,
-        value
+        instruction,
+        argument: parseInt(value)
     }
 });
 
-function Execute(code)
-{
-    let instructionHasRun = new Map();
-    let accumulator = 0;
-    let index = 0;
+function executeProgram(program) {
+    /** @type { number[] } */
+    const trace = [];
 
-    while(true) 
-    {
+    let pc = 0;
+    let acc = 0;
+    let isInfiniteLoop = false;
 
-        let instruction = code[index];
-    
-        if(instructionHasRun.get(index))
+    // loop as long as there are instructions to execute (infinite loops are broken later)
+    while (pc < program.length) {
+        // break if we have been here before
+        if (trace.includes(pc)) {
+            isInfiniteLoop = true;
             break;
-        else
-            instructionHasRun.set(index, true)
-        
-        if(instruction.operation == "nop")
-        {
-            index++;
         }
-        else if (instruction.operation == "acc")
-        {
-            accumulator += parseInt(instruction.value);
-            index++;
-        }
-        else if(instruction.operation == "jmp")
-        {
-            index += parseInt(instruction.value);
-        }
-        
-        if(index >= code.length)
-        {
-            console.log("Code exitted with index: " + index);
-            return { accumulator, hasExitted: true};
+
+        // get current instruction
+        const ins = program[pc];
+
+        // add to trace
+        trace.push(pc);
+
+        // execute it
+        switch (ins.instruction) {
+            case 'nop': {
+                pc++;
+                break;
+            }
+            case 'acc': {
+                pc++;
+                acc += ins.argument;
+                break;
+            }
+            case 'jmp': {
+                pc += ins.argument;
+                break;
+            }
+            default: throw new Error(`Unknown instruction '${ ins.instruction }' at line ${ pc }`, ins);
         }
     }
 
-    return { accumulator, hasExitted: false};
+    return {
+        programCounter: pc,
+        accumulator: acc,
+        isCleanExit: !isInfiniteLoop,
+        isInfiniteLoop,
+        trace
+    };
 }
 
-console.log("Exercise 1: " + Execute(input).accumulator);
+const part1Result = executeProgram(input);
+console.log(`Part 1: Program executed with return code of ${ part1Result.accumulator }.`, part1Result);
 
-for (var i = 0; i < input.length; i++)
-{
-    var improvedInput = input;
+function autoFixProgram() {
+    // test each instruction until the program is fixed
+    for (let i = 0; i < input.length; i++) {
+        const ins = input[i];
 
-    if(improvedInput[i].operation == "jmp")
-        improvedInput[i].operation = "nop";
-    else if(improvedInput[i].operation == "nop")
-        improvedInput[i].operation = "jmp";
+        // skip ACCs
+        if (ins.instruction === 'acc') {
+            continue;
+        }
 
-    if (improvedInput[i].operation == "jmp" && parseInt(improvedInput[i].value) == 0)
-    {
-        console.log(`Skipped ${i} for infinite loop`);
-        continue;
-    }
+        // backup modified instruction to restore after
+        const insBackup = ins.instruction;
 
-    var result = Execute(improvedInput);
+        try {
+            // flip the instruction from jmp -> nop or vice versa
+            ins.instruction = (ins.instruction === 'jmp') ? 'nop' : 'jmp';
 
-    if(result.hasExitted)
-    {
-        console.log("Exercise 2: " + result.accumulator)
-        break;
+            // if program exited cleanly, then it is fixed
+            const result = executeProgram(input);
+            if (result.isCleanExit) {
+                return result;
+            }
+
+        } finally {
+            // fix up the instruction before looping or exiting
+            ins.instruction = insBackup;
+        }
     }
 }
+
+const part2Result = autoFixProgram();
+console.log(`Part 2: Program exited successfully with return code of ${ part2Result.accumulator }.`, part2Result);
