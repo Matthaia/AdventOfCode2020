@@ -63,5 +63,4 @@ function DoSwitch(seats)
 }
 
 var result = DoSwitch(input);
-console.log(NumberOfAdjecentOccupiedSeats(result.seats, 3, 0), result.seats[0][3])
-//console.log(DoSwitch(result.seats));
+console.log(DoSwitch(result.seats));
