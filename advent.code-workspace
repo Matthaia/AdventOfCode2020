@@ -2,6 +2,9 @@
     "folders": [
         {
             "path": "Javascript"
+        },
+        {
+            "path": "Input"
         }
     ]
 }
