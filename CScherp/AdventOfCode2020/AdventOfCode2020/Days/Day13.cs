@@ -60,10 +60,8 @@ namespace AdventOfCode2020.Days
 
 		public long Exercise2()
 		{
-			//var busses = Busses.Select((item, index) => (item.ID, index)).Where(x => x.ID != -1).ToList();
-
 			var time = 0L;
-			var inc = Busses[0].ID;
+			var increment = Busses[0].ID;
 			for (var i = 1; i < Busses.Count; i++)
 			{
 				if (Busses[i].IsValid)
@@ -71,10 +69,10 @@ namespace AdventOfCode2020.Days
 					var newTime = Busses[i].ID;
 					while (true)
 					{
-						time += inc;
+						time += increment;
 						if ((time + i) % newTime == 0)
 						{
-							inc *= newTime;
+							increment *= newTime;
 							break;
 						}
 					}
