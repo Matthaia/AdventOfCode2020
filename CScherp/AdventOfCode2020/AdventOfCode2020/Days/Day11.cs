@@ -5,7 +5,6 @@ using System.Text;
 
 namespace AdventOfCode2020.Days
 {
-
 	public class Day11Airplane
 	{
 		private enum Direction
@@ -132,6 +131,11 @@ namespace AdventOfCode2020.Days
 				changes,
 				newMap
 			);
+		}
+
+		public override int GetHashCode()
+		{
+			return Seats.GetHashCode();
 		}
 
 		public (int changes, char[][] seats) Excercise2()
