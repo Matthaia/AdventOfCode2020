@@ -5,20 +5,21 @@ using System.Text;
 
 namespace AdventOfCode2020.Days
 {
-	public enum Direction
-	{
-		Top,
-		TopRight,
-		Right,
-		BottomRight,
-		Bottom,
-		BottomLeft,
-		Left,
-		TopLeft
-	}
 
 	public class Day11Airplane
 	{
+		private enum Direction
+		{
+			Top,
+			TopRight,
+			Right,
+			BottomRight,
+			Bottom,
+			BottomLeft,
+			Left,
+			TopLeft
+		}
+
 		public char[][] Seats { get; set; }
 
 		public Day11Airplane(string[] rows)
@@ -57,7 +58,7 @@ namespace AdventOfCode2020.Days
 			return occupiedPlaces;
 		}
 
-		public char? GetNextSeat(int x, int y, Direction direction, bool withJumps = false)
+		private char? GetNextSeat(int x, int y, Direction direction, bool withJumps = false)
 		{
 			var directionData = new Dictionary<Direction, (int yDiff, int xDiff)>
 			{
